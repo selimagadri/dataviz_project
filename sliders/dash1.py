@@ -38,7 +38,7 @@ def createApp2():
             # If no genre is selected, use the entire dataset
             hist, edges = np.histogram(df['popularity'], bins=20)
 
-        plot.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:], fill_color="#0E21A0", line_color="white")
+        plot.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:], fill_color="#004225", line_color="white")
 
         return plot
 
@@ -61,7 +61,7 @@ def createApp2():
             x_range=[str(key) for key in key_counts.index],
             sizing_mode='stretch_width'
         )
-        key_distribution_plot.vbar(x=[str(key) for key in key_counts.index], top=key_counts.values, width=0.8, fill_color='#4D2DB7')
+        key_distribution_plot.vbar(x=[str(key) for key in key_counts.index], top=key_counts.values, width=0.8, fill_color='#186F65')
         
         return key_distribution_plot
 
@@ -83,7 +83,7 @@ def createApp2():
             x_range=[str(ts) for ts in time_sig_counts.index],
             sizing_mode='stretch_width'
         )
-        time_sig_distribution_plot.vbar(x=[str(ts) for ts in time_sig_counts.index], top=time_sig_counts.values, width=0.8, fill_color='#9D44C0')
+        time_sig_distribution_plot.vbar(x=[str(ts) for ts in time_sig_counts.index], top=time_sig_counts.values, width=0.8, fill_color='#A8DF8E')
 
         
         return time_sig_distribution_plot
@@ -171,55 +171,7 @@ def createApp2():
         return p
 
 
-
-    # Define a function to create a Panel plot for attribute averages by genre
-    def attribute_averages_by_genre(selected_attribute='popularity'):
-        if selected_attribute not in df.columns:
-            return pn.pane.Alert("Invalid Attribute", alert_type="error")
-
-        avg_by_genre = df.groupby('track_genre')[selected_attribute].mean()
-
-        # Convert the index (genre names) to a list of strings
-        x_range = list(avg_by_genre.index)
-
-        plot = bpl.figure(
-            x_range=x_range,  # Genre names on the x-axis
-            title=f'Average {selected_attribute.capitalize()} by Genre',
-            x_axis_label='Genre',
-            y_axis_label=f'Average {selected_attribute.capitalize()}',
-            sizing_mode='stretch_width'
-        )
-        plot.vbar(x=x_range, top=avg_by_genre.values, width=0.8, fill_color="#7752FE", line_color="white")
-
-        return plot
-
-
-    # Define a function to create a Panel plot for popularity vs. energy
-    def popularity_vs_energy(selected_track=None):
-        plot = bpl.figure(
-            title='Popularity vs. Energy for Selected Track',
-            x_axis_label='Energy',
-            y_axis_label='Popularity',
-            sizing_mode='stretch_both'
-        )
-
-        if selected_track:
-            track_data = df[df['track_name'] == selected_track]
-            plot.circle(track_data['energy'], track_data['popularity'], size=8, fill_color='blue')
-            plot.title.text = f'Popularity vs. Energy for "{selected_track}"'
-            plot.title.align = 'center'
-        else:
-            plot.circle(df['energy'], df['popularity'], size=8, fill_color='blue')
-            plot.title.text = 'Popularity vs. Energy for All Tracks'
-            plot.title.align = 'center'
-
-        
-
-        return plot
-
-
-
-   
+      
     def create_correlation_heatmap():
         audio_feature_columns = ['energy', 'danceability', 'valence', 'acousticness', 'instrumentalness', 'speechiness']
 
@@ -266,23 +218,185 @@ def createApp2():
         correlation_heatmap_pane = pn.pane.Bokeh(correlation_heatmap_figure, sizing_mode="stretch_both")
 
         return correlation_heatmap_pane
+    
+
+    def scatter_plot(source, x, y, title, x_label, y_label):
+        p = bpl.figure(
+            title=title,
+            x_axis_label=x_label,
+            y_axis_label=y_label,
+            sizing_mode='stretch_width',
+            tools="pan,box_zoom,reset"
+        )
+        
+        p.scatter(x, y, source=source, size=8, fill_color='#1DB954',line_color="white")
+
+        hover = HoverTool()
+        hover.tooltips = [
+            (x_label, f'@{x}'),
+            (y_label, f'@{y}')
+        ]
+        p.add_tools(hover)
+        
+        return p
+
+
+    def danceability_vs_energy(selected_genre=None):
+        if selected_genre:
+            genre_df = df[df['track_genre'] == selected_genre]
+        else:
+            genre_df = df
+        
+        title = f'Danceability vs. Energy for {selected_genre or "All Genres"}'
+        x_label = 'Energy'
+        y_label = 'Danceability'
+        
+        tooltips = [("Energy", "@energy"), ("Danceability", "@danceability")]
+        
+        source = ColumnDataSource(genre_df)
+
+        return scatter_plot(source, 'energy', 'danceability', title, x_label, y_label)
+
+
+    def popularity_vs_acousticness(selected_genre=None):
+        if selected_genre:
+            genre_df = df[df['track_genre'] == selected_genre]
+        else:
+            genre_df = df
+        
+        title = f'Popularity vs. Acousticness for {selected_genre or "All Genres"}'
+        x_label = 'Acousticness'
+        y_label = 'Popularity'
+
+        source = ColumnDataSource(genre_df)
+
+        
+        return scatter_plot(source, 'acousticness', 'popularity', title, x_label, y_label)
+
+
+
+    def get_top_genres_by_attribute(attribute, top_n=10):
+        # Group the data by genre and calculate the mean of the selected attribute
+        top = df.groupby('track_genre')[attribute].mean().nlargest(top_n)
+        return top
+  
+
+    def top_genres_by_attribute(selected_attribute='popularity', top_n=10):
+        top_data = get_top_genres_by_attribute(selected_attribute, top_n)
+        
+        p = bpl.figure(
+            x_range=list(top_data.index),
+            title=f'Top {top_n} genres based on  {selected_attribute.capitalize()}',
+            x_axis_label=selected_attribute.capitalize(),
+            y_axis_label=f'Average {selected_attribute.capitalize()}',
+            sizing_mode='stretch_width',
+            toolbar_location=None,
+        )
+        
+        p.vbar(x=top_data.index, top=top_data.values, width=0.7, fill_color="#03C988", line_color="#03C988")
+
+        p.xaxis.major_label_orientation = np.pi / 4
+
+        return p
+
+
+
+    def get_top_artists_by_attribute(attribute, top_n=10):
+        # Sort the DataFrame by the selected attribute in descending order
+        #sorted_df = df.sort_values(by=attribute, ascending=False)
+        # Get the top N artists
+        top_artists = df.groupby('artists', as_index=False)[attribute].mean().nlargest(top_n, attribute)
+        return top_artists
+
+
+    def top_artists_by_attribute(selected_attribute='popularity', top_n=10):
+        top_artists = get_top_artists_by_attribute(selected_attribute, top_n)
+
+        p = bpl.figure(
+            y_range=top_artists['artists'][::-1],  # Reverse the order to display the top artists at the top
+            title=f'Top {top_n} Artists based on {selected_attribute.capitalize()}',
+            x_axis_label=selected_attribute.capitalize(),
+            y_axis_label='Artists',
+            sizing_mode='stretch_width',
+            toolbar_location=None,
+        )
+
+        p.hbar(y=top_artists['artists'][::-1], right=top_artists[selected_attribute][::-1],
+            height=0.7, fill_color="#68B984", line_color="#68B984")
+
+        return p
+
+
+
+    def get_top_artists_by_genre(top_n=10):
+        top_artists_by_genre = {}
+        genres = df['track_genre'].unique()
+        
+        for genre in genres:
+            top_artists = df[df['track_genre'] == genre]['artists'].value_counts().nlargest(top_n)
+            top_artists_by_genre[genre] = top_artists
+        
+        return top_artists_by_genre
+
+
+
+    # Function to create a table with the top artists for each genre
+    def top_artists_by_genre_table(selected_genre=None, top_n=10):
+        top_artists_by_genre = get_top_artists_by_genre(top_n)
+        table_data = []
+
+        if selected_genre is None or selected_genre == 'All Genres':
+            for genre, top_artists in top_artists_by_genre.items():
+                table_data.append((genre, top_artists.index.tolist()))
+        elif selected_genre in top_artists_by_genre:
+            top_artists = top_artists_by_genre[selected_genre]
+            table_data.append((selected_genre, top_artists.index.tolist()))
+        else:
+            table_data.append(('No Genre Selected', []))
+
+        table_data = pd.DataFrame(table_data, columns=['Genre', 'Top Artists'])
+        table = pn.widgets.DataFrame(table_data,widths={'Top Artists': 400})
+        
+        return table
 
 
     
+    description_div = Div(
+    text="""
+    <style>
+        .description {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .title {
+            color: #1DB954;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .line {
+            color: black;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .table {
+            margin-top: 20px;
+        }
+    </style>
+    <div class="description">
+        <p class="title">Dashboard Description</p>
+        <p class="line">This dashboard provides an interactive visualization of the data using Bokeh, Plotly, and Panel.</p>
+        <p class="line">You can explore various aspects of the dataset using the options provided in the sidebar.</p>
+    </div>
+    """)
+
+
+    # Create a Panel column for the dashboard description
     description = pn.Column(
-    pn.Row(pn.layout.HSpacer(), pn.pane.Markdown("## Dashboard Description", styles={"font-size": "20px"}), pn.layout.HSpacer()),
+        pn.Row(pn.layout.HSpacer(), description_div, pn.layout.HSpacer()),
+        sizing_mode="stretch_width",
+    )
 
-    # ...
-
-    pn.pane.Markdown(
-        """
-        This dashboard provides an interactive visualization of the data using Bokeh, Plotly, and Panel.
-        You can explore various aspects of the dataset using the options provided in the sidebar.
-        """
-    ),
-    # pn.layout.VSpacer(height=5),
-    sizing_mode="stretch_width",
-)
 
 
     data_table = pnw.DataFrame(
@@ -298,10 +412,13 @@ def createApp2():
 
 
     genre_selector = pn.widgets.MultiChoice(name='Genres', options=['All Genres'] + df['track_genre'].unique().tolist(), width=200)
-    refresh_button = pn.widgets.Button(name="Refresh Charts")
-    attribute_selector = pn.widgets.Select(name='Select Attribute', options=df.columns.to_list(), value='popularity', width=200)
-    attribute_refresh_button = pn.widgets.Button(name="Refresh Attribute Chart")
-    track_selector = pn.widgets.Select(name='Select Track', options=['All Tracks'] + df['track_name'].unique().tolist(), width=200)
+    refresh_button = pn.widgets.Button(name="Refresh Charts",button_type='success')
+    top_artists_or_genres_attribute_selector = pn.widgets.Select(
+    name='Select Attribute',
+    options=['popularity', 'danceability', 'energy', 'valence', 'acousticness','loudness','liveness','tempo'],
+    value='popularity',
+    width=200)
+
 
     # Define a callback function to update the charts when the genre selection changes
     def update_charts(event):
@@ -315,44 +432,38 @@ def createApp2():
         time_signature_distribution_chart.object = time_signature_distribution(selected_genre)
         explicit_distribution_chart.object = explicit_distribution(selected_genre)
         danceability_chart.object=danceability_box_plot(selected_genre)
-
-    # Define a callback function to update the attribute chart when the selection changes
-    def update_attribute_chart(event):
-        selected_attribute = event.obj.value
-        attribute_average_chart.object = attribute_averages_by_genre(selected_attribute)
+        danceability_energy_chart.object = danceability_vs_energy(selected_genre)
+        popularity_acousticness_chart.object = popularity_vs_acousticness(selected_genre)
+        top_artists_by_genre_table_chart.object = top_artists_by_genre_table(selected_genre)
 
 
-    # Define a callback function to update the popularity vs. energy chart
-    def update_popularity_energy_chart(event):
-        selected_track = event.obj.value
-        popularity_energy_chart.object = popularity_vs_energy(selected_track)
+    # Define a callback function to update the chart
+    def update_top_artists_or_genres_chart(event):
+        selected_attribute = top_artists_or_genres_attribute_selector.value
+        top_artists_or_genres_chart.object = top_genres_by_attribute(selected_attribute)
+        top_artists_by_attribute_chart.object = top_artists_by_attribute(selected_attribute)
+        
+    
+
+    
 
 
     # Create a placeholder chart for popularity distribution
     popularity_chart = pn.panel(popularity_distribution())
-
     # Create a placeholder chart for key distribution
     key_distribution_chart = pn.panel(key_distribution())
-
     # Create a placeholder chart for time signature distribution
     time_signature_distribution_chart = pn.panel(time_signature_distribution())
-
     # Create a placeholder chart for explicit distribution (pie chart)
     explicit_distribution_chart = pn.panel(explicit_distribution())
-
     danceability_chart=pn.panel(danceability_box_plot())
-
-    # Create a Panel plot for the initial attribute (popularity)
-    attribute_average_chart = pn.panel(attribute_averages_by_genre(), sizing_mode="stretch_width")
-
-    # Create a placeholder chart for popularity vs. energy
-    popularity_energy_chart = pn.panel(popularity_vs_energy(), sizing_mode="stretch_both")
-
-
     # Call the function to create the correlation heatmap
     correlation_heatmap_pane = create_correlation_heatmap()
-
-
+    danceability_energy_chart = pn.panel(danceability_vs_energy(), sizing_mode="stretch_width")
+    popularity_acousticness_chart = pn.panel(popularity_vs_acousticness(), sizing_mode="stretch_width")
+    top_artists_or_genres_chart = pn.panel(top_genres_by_attribute())
+    top_artists_by_attribute_chart = pn.panel(top_artists_by_attribute())  # Call the function to create the chart
+    top_artists_by_genre_table_chart=pn.panel(top_artists_by_genre_table())
 
 
 
@@ -361,22 +472,18 @@ def createApp2():
     # Add the callback to the genre_selector
     genre_selector.param.watch(update_charts, 'value')
 
-    # Add the callback to the attribute_selector
-    attribute_selector.param.watch(update_attribute_chart, 'value')
-
-    # Add a callback to the track_selector to update the popularity vs. energy chart
-    track_selector.param.watch(update_popularity_energy_chart, 'value')
-
+    top_artists_or_genres_attribute_selector.param.watch(update_top_artists_or_genres_chart, 'value')
+   
     # Store the initial chart states
     initial_popularity_chart = popularity_chart.object
     initial_key_distribution_chart = key_distribution_chart.object
     initial_time_signature_distribution_chart = time_signature_distribution_chart.object
     initial_explicit_distribution_chart = explicit_distribution_chart.object
     initial_danceability_chart= danceability_chart.object
-    # Store the initial state of the attribute chart
-    initial_attribute_chart = attribute_average_chart.object
+    initial_danceability_energy_chart=danceability_energy_chart.object
+    initial_popularity_acousticness_chart=popularity_acousticness_chart.object
 
-    initial_popularity_energy_chart=popularity_energy_chart.object
+   
 
 
 
@@ -388,23 +495,19 @@ def createApp2():
         time_signature_distribution_chart.object = initial_time_signature_distribution_chart
         explicit_distribution_chart.object = initial_explicit_distribution_chart
         danceability_chart.object = initial_danceability_chart
+        danceability_energy_chart.object=initial_danceability_energy_chart
+        popularity_acousticness_chart.object=initial_popularity_acousticness_chart
 
     refresh_button.on_click(refresh_charts)
 
-    # Create a refresh button for the attribute chart
-    def refresh_attribute_chart(event):
-        # Reset the attribute chart to its initial state
-        attribute_average_chart.object = initial_attribute_chart
-
-    attribute_refresh_button.on_click(refresh_attribute_chart)
-
+    
 
     sidebar = pn.Column(
         pn.Column(
             genre_selector,
             refresh_button,
-            attribute_selector,
-            attribute_refresh_button,
+            top_artists_or_genres_attribute_selector,
+            
         )
     )
 
@@ -423,7 +526,14 @@ def createApp2():
                     ('Explicit Tracks Distribution', explicit_distribution_chart),
                     ('Danceability by Genre', danceability_chart),
                 ),
-                attribute_average_chart,
+                pn.Row(
+                danceability_energy_chart,
+                popularity_acousticness_chart,
+                ),
+                top_artists_by_genre_table_chart,
+                pn.Row(
+                top_artists_or_genres_chart,
+                top_artists_by_attribute_chart,),
                 correlation_heatmap_pane,
                 sizing_mode="stretch_width",
             ),
