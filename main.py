@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 from sliders.pn_app import createApp, createApp1 
+from sliders.dash1 import createApp2
 
 app = FastAPI()
 # Serve static files (CSS, JS)
@@ -28,7 +29,7 @@ async def other_page(request: Request):
     return templates.TemplateResponse("base.html", {"request": request, "script": script})
 
 
-pn.serve({'/app': createApp, '/other': createApp1},
+pn.serve({'/app': createApp2, '/other': createApp1},
         port=5000, allow_websocket_origin=["127.0.0.1:8000"],
          address="127.0.0.1", show=False)
 
@@ -38,7 +39,7 @@ if __name__ == "__main__":
     import uvicorn
 
     # Serve both Panel apps
-    pn.serve({'/app': createApp, '/other': createApp1},
+    pn.serve({'/app': createApp2, '/other': createApp1},
         port=5000, allow_websocket_origin=["127.0.0.1:8000"],
          address="127.0.0.1", show=False)
     
