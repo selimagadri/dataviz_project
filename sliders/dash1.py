@@ -19,7 +19,20 @@ from bokeh.models import ColorBar, LinearColorMapper
 #df = pd.read_csv('dataset.csv')
 
 def createApp2():
-    df = pd.read_csv('dataset.csv')
+    df1 = pd.read_csv('dataset.csv', index_col=0)
+    # Create an empty DataFrame to store the sampled data
+    df = pd.DataFrame()
+
+    # Group the original DataFrame by 'track_genre'
+    grouped = df1.groupby('track_genre')
+
+    # Iterate over each group, and sample 20% of the data for each 'track_genre'
+    for genre, group_df in grouped:
+        df = pd.concat([df, group_df.sample(frac=0.05, random_state=42)])
+
+    # Reset the index of the sampled data
+    df.reset_index(drop=True, inplace=True)
+
 
     # Define a function to create a Panel plot for popularity
     def popularity_distribution(selected_genre=None):
