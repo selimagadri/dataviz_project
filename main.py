@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from sliders.pn_app import createApp, createApp1  # Import your Panel app from sliders.pn_app
+from sliders.pn_app import createApp, createApp1 
 
 app = FastAPI()
 # Serve static files (CSS, JS)
