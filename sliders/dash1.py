@@ -203,7 +203,7 @@ def createApp2():
             width=600,
             height=600,
             tools="hover",
-            tooltips=[('Features', '@y, @x'), ('Correlation', '@image')],
+            tooltips=[('Correlation', '@image')],
             sizing_mode="fixed"
         )
 
@@ -515,20 +515,28 @@ def createApp2():
 
     
 
+    # Create a sidebar with the widgets
     sidebar = pn.Column(
-        pn.Column(
-            genre_selector,
-            refresh_button,
-            top_artists_or_genres_attribute_selector,
-            
+        pn.Column(genre_selector,
+        refresh_button,
+    
+        
         )
+        
     )
 
+    sidebar_second = pn.Column(
+        pn.Column( top_artists_or_genres_attribute_selector,
+    
+        
+        )
+        
+    )
+
+        # Create the main layout
     app_layout = pn.Column(
         description,
-        pn.layout.VSpacer(height=3),
         data_table,
-        pn.layout.VSpacer(height=10),
         pn.Row(
             sidebar,
             pn.Column(
@@ -537,23 +545,35 @@ def createApp2():
                     ('Key Distribution', key_distribution_chart),
                     ('Time Signature Distribution', time_signature_distribution_chart),
                     ('Explicit Tracks Distribution', explicit_distribution_chart),
-                    ('Danceability by Genre', danceability_chart),
+                    # ('Danceability by Genre', danceability_chart),
                 ),
+                danceability_chart,
                 pn.Row(
-                danceability_energy_chart,
-                popularity_acousticness_chart,
+                    danceability_energy_chart,
+                    popularity_acousticness_chart,
                 ),
                 top_artists_by_genre_table_chart,
+            
+            ),
+            
+        ),
+        pn.Row(
+            sidebar_second,
+            pn.Column(
                 pn.Row(
                 top_artists_or_genres_chart,
                 top_artists_by_attribute_chart,),
+
                 correlation_heatmap_pane,
-                sizing_mode="stretch_width",
             ),
+
+        
+
         ),
+        
+        
         sizing_mode="stretch_width",
     )
-
     custom_css = """
     .custom-navbar {
         padding: 10px;
