@@ -7,7 +7,6 @@
     <title>Spotiviz - Spotify tracks data application</title>
     <link href="//fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
         rel="stylesheet">
-
     <link rel="stylesheet" href="assets/css/style-starter.css">
     <link rel="icon" href="assets/favicon/favicon.ico" type="image/x-icon">
 </head>
@@ -18,7 +17,7 @@
             <nav class="navbar navbar-expand-lg stroke">
                 <h1>
                     <a class="navbar-brand" href="/">
-                        <img class="img-fluid" src="assets/images/logo.png" alt=" "> 
+                        <img class="img-fluid" src="assets/images/logo.png" alt=" ">
                     </a>
                 </h1>
                 <button class="navbar-toggler  collapsed bg-gradient" type="button" data-toggle="collapse"
@@ -29,18 +28,19 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
                     <ul class="navbar-nav ml-lg-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Home </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/firstdash">Dashboard 1</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item ">
                             <a class="nav-link" href="/seconddash">Dashborad 2</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/thirddash">Dashborad 3</a>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/thirddash">Dashboard 3<span class="sr-only">(current)</span></a>
                         </li>
+    
                     </ul>
                 </div>
                 <div class="cont-ser-position">
@@ -59,102 +59,17 @@
             </nav>
         </div>
     </header>
-    <section id="home" class="w3l-banner py-5">
-        <div class="container pt-5 pb-md-4">
-            <div class="row align-items-center">
-                <div class="col-md-6 banner-left pt-md-0 pt-5">
-                    <h3 class="mb-sm-4 mb-3 title"><span class="type-js"><span
-                        class="text-js"> This is our Spotify<br> Tracks Data Application</span></span></h3>
-                    <div class="mt-md-5 mt-4 mb-lg-0 mb-4">
-                        <a class="btn button-style" href="/firstdash">Get Started<i class="fa fa-angle-double-right"
-                                aria-hidden="true"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-6 banner-right mt-md-0 mt-4">
-                    <img class="img-fluid" src="assets/images/b1.png" alt=" ">
-                </div>
-            </div>
-        </div>
-    </section> 
-    <div class="w3l-grids-block-5 py-5">
-        <section id="grids5-block" class="pt-md-4 pb-md-5 py-4 mb-5">
+    <div class="inner-banner">
+        <section class="w3l-breadcrumb">
             <div class="container">
-                <div class="title-main text-center mx-auto mb-4">
-                    <h3 class="title-big">Our Dachboards : Explore, Analyze, and Predict </h3>
-                    <p class="sub-title mt-2">These dashboards are your gateway to exploring the fascinating world of music on Spotify. 
-                        So, go ahead, click on the dashboard that piques your interest and 
-                        embark on a journey of data-driven discovery.</p>
-                </div>
-                <div class="row mt-sm-5 pt-lg-2">
-                    <div class="col-lg-4 col-sm-6">
-                        <div class=" grids5-info">
-                            <a href="/firstdash"><img src="assets/images/dash1.jpg" alt="" /></a>
-                            <div class="blog-info">
-                                <h4><a href="/firstdash">Exploratory Dashboard</a></h4>
-                                <p>Delve into the Spotify tracks dataset, with an array of 
-                                    filters and visualizations. Uncover patterns, trends, and details 
-                                    of top songs, artists, and genres.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-sm-6 mt-sm-0 mt-4">
-                        <div class=" grids5-info">
-                            <a href="/seconddash"><img src="assets/images/dash2.jpg" alt="" /></a>
-                            <div class="blog-info">
-                                <h4><a href="/seconddash">Genre Prediction Dashboard </a></h4>
-                                <p> The heart of our app. Predict and understand the genre of a track using
-                                     machine learning models. Interact with the predictions and discover
-                                      the magic behind the music.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-sm-6  mt-lg-0 mt-4">
-                        <div class=" grids5-info">
-                            <a href="/thirddash"><img src="assets/images/dash3.jpg" alt="" /></a>
-                            <div class="blog-info">
-                                <h4><a href="/thirddash">Further Analysis</a></h4>
-                                <p>For those who crave more, this dashboard provides a space for additional
-                                     insights, allowing you to explore fascinating aspects of the dataset that go beyond genre prediction.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <h4 class="inner-text-title font-weight-bold mb-sm-3 mb-2">Genre Prediction Dashboard</h4>
+                <ul class="breadcrumbs-custom-path">
+                    <li><a href="/">Home</a></li>
+                    <li class="active"><span class="fa fa-chevron-right mx-2" aria-hidden="true"></span>Dashboard 3</li>
+                </ul>
             </div>
         </section>
     </div>
-    <section class="w3l-teams-32-main py-5">
-        <div class="teams-32 py-md-4">
-            <div class="container">
-                <div class="title-main text-center mx-auto mb-4">
-                    <h3 class="title-big">Meet Our Enthusiastic Duo</h3>
-                    
-                </div>
-                <div class="row main-contteam-32 mt-sm-5 pt-lg-2">
-                    <div class="col-lg-3 offset-lg-3 col-6 team-main-19">
-                        <div class="column-19">
-                            <a href="https://www.linkedin.com/in/ines-ouhichi/"><img class="img-fluid" src="assets/images/team-ines3.jpg" alt=" "></a>
-                        </div>
-                        <div class="right-team-9">
-                            <h6><a href="https://www.linkedin.com/in/ines-ouhichi/" class="title-team-32">Ines Ouhichi</a></h6>
-                            <p class="sm-text-32">Ines has a knack for finding patterns in data and an ear for music, 
-                                making her a key contributor to the project.</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-6 team-main-19">
-                        <div class="column-19">
-                            <a href="https://www.linkedin.com/in/selima-gadri/"><img class="img-fluid" src="assets/images/team-selima2.jpg" alt=" "></a>
-                        </div>
-                        <div class="right-team-9">
-                            <h6><a href="https://www.linkedin.com/in/selima-gadri/" class="title-team-32">Selima Gadri</a></h6>
-                            <p class="sm-text-32">Selima's expertise lies in predictive modeling and data visualization, 
-                                making her a valuable asset to the team.</p>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-    </section>
     {{ script|safe }}
  
     <footer class="w3l-footer-22 position-relative mt-5 pt-5">
@@ -205,8 +120,6 @@
             </div>
         </div>
     </footer>
-
-
     <!-- Js scripts -->
     <!-- move top -->
     <button onclick="topFunction()" id="movetop" title="Go to top">
@@ -344,34 +257,6 @@
         });
     </script>
     <!-- //MENU-JS -->
-
-    <!-- for testimonials carousel -->
-    <script src="assets/js/owl.carousel.js"></script>
-    <script>
-        $(document).ready(function () {
-            $("#owl-demo1").owlCarousel({
-                loop: true,
-                margin: 20,
-                responsiveClass: true,
-                responsive: {
-                    0: {
-                        items: 1,
-                        nav: true
-                    },
-                    600: {
-                        items: 1,
-                        nav: false
-                    },
-                    1000: {
-                        items: 1,
-                        nav: true,
-                        loop: true
-                    }
-                }
-            })
-        })
-    </script>
-    <!-- //for testimonials carousel -->
 
     <!-- disable body scroll which navbar is in active -->
     <script>

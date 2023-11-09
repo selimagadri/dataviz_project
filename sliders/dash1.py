@@ -18,7 +18,7 @@ from bokeh.models import ColorBar, LinearColorMapper
 # Read the dataset into a Pandas DataFrame
 #df = pd.read_csv('dataset.csv')
 
-def createApp2():
+def createApp1():
     df1 = pd.read_csv('dataset.csv', index_col=0)
     # Create an empty DataFrame to store the sampled data
     df = pd.DataFrame()
@@ -33,6 +33,21 @@ def createApp2():
     # Reset the index of the sampled data
     df.reset_index(drop=True, inplace=True)
 
+
+    def genre_distribution():
+        genre_counts = df['track_genre'].value_counts()
+        genre_distribution_plot = bpl.figure(
+            title='Track Genre Distribution',
+            x_axis_label='Genre',
+            y_axis_label='Count',
+            x_range=list(genre_counts.index),
+            sizing_mode='stretch_width',
+            tools='hover',  # Enable hover tool
+            tooltips=[("Genre", "@x")],  # Define tooltips
+        )
+        genre_distribution_plot.vbar(x=list(genre_counts.index), top=genre_counts.values, width=0.8, fill_color='#68B984')
+
+        return genre_distribution_plot
 
     # Define a function to create a Panel plot for popularity
     def popularity_distribution(selected_genre=None):
@@ -460,7 +475,7 @@ def createApp2():
 
     
 
-
+    genre_distribution_chart = pn.panel(genre_distribution())
     # Create a placeholder chart for popularity distribution
     popularity_chart = pn.panel(popularity_distribution())
     # Create a placeholder chart for key distribution
@@ -537,6 +552,7 @@ def createApp2():
     app_layout = pn.Column(
         description,
         data_table,
+        genre_distribution_chart,
         pn.Row(
             sidebar,
             pn.Column(

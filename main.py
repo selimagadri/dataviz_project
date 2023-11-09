@@ -4,8 +4,10 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from sliders.pn_app import createApp, createApp1 
-from sliders.dash1 import createApp2
+from sliders.pn_app import createApp11 
+from sliders.dash1 import createApp1
+from sliders.dash2 import createApp2
+from sliders.dash3 import createApp3
 
 app = FastAPI()
 # Serve static files (CSS, JS)
@@ -27,8 +29,13 @@ async def dash2_page(request: Request):
     script = server_document('http://127.0.0.1:5000/dash2')
     return templates.TemplateResponse("dashboard2.html", {"request": request, "script": script})
 
+@app.get("/thirddash")
+async def dash3_page(request: Request):
+    script = server_document('http://127.0.0.1:5000/dash3')
+    return templates.TemplateResponse("dashboard3.html", {"request": request, "script": script})
 
-pn.serve({'/dash1': createApp2, '/dash2': createApp1},
+
+pn.serve({'/dash1': createApp1, '/dash2': createApp2,'/dash3':createApp3},
         port=5000, allow_websocket_origin=["127.0.0.1:8000"],
          address="127.0.0.1", show=False)
 
@@ -38,7 +45,7 @@ if __name__ == "__main__":
     import uvicorn
 
     # Serve both Panel apps
-    pn.serve({'/app': createApp2, '/other': createApp1},
+    pn.serve({'/app': createApp1, '/other': createApp2,"/third":createApp3},
         port=5000, allow_websocket_origin=["127.0.0.1:8000"],
          address="127.0.0.1", show=False)
     
