@@ -4,13 +4,11 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from sliders.pn_app import createApp11 
 from sliders.dash1 import createApp1
 from sliders.dash2 import createApp2
 from sliders.dash3 import createApp3
 
 app = FastAPI()
-# Serve static files (CSS, JS)
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 templates = Jinja2Templates(directory="templates")
 
