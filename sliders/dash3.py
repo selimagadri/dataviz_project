@@ -4,7 +4,7 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from umap import UMAP
 from bokeh.plotting import figure
-from bokeh.models import ColumnDataSource, Select
+from bokeh.models import ColumnDataSource, Select, Div
 from bokeh.palettes import viridis
 from bokeh.transform import factor_cmap
 from colorsys import hls_to_rgb
@@ -77,21 +77,21 @@ def createApp3():
         algorithm = algorithm_selector.value
         if algorithm == 'PCA':
             result = perform_pca(X)
-            title_div.object = "# PCA Scatter Plot"
+            title_div.object = "## PCA Scatter Plot"
             description_div.object = (
                 """This is a scatter plot based on *Principal Component Analysis (PCA)*. 
                 PCA is a dimensionality reduction technique that identifies patterns in data and represents it in a lower-dimensional space."""
             )
         elif algorithm == 't-SNE':
             result = perform_tsne(X)
-            title_div.object = "# t-SNE Scatter Plot"
+            title_div.object = "## t-SNE Scatter Plot"
             description_div.object = (
                 """This is a scatter plot based on *t-Distributed Stochastic Neighbor Embedding (t-SNE)*. 
                 t-SNE is a non-linear dimensionality reduction technique particularly effective for visualization of high-dimensional data."""
             )
         elif algorithm == 'UMAP':
             result = perform_umap(X)
-            title_div.object = "# UMAP Scatter Plot"
+            title_div.object = "## UMAP Scatter Plot"
             description_div.object = (
                 """This is a scatter plot based on *Uniform Manifold Approximation and Projection (UMAP)*. 
                 UMAP is a dimensionality reduction technique known for preserving both local and global structure in the data."""
@@ -108,10 +108,47 @@ def createApp3():
     # Attach the callback function to the algorithm_selector
     algorithm_selector.on_change('value', update_plot)
 
+    description_div_all = Div(
+    text="""
+    <style>
+        .description {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .title {
+            color: #1DB954;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .line {
+            color: black;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .table {
+            margin-top: 20px;
+        }
+    </style>
+    <div class="description">
+        <p class="title">Dashboard Description</p>
+        <p class="line">This dashboard allows to use dimensionality reduction algorithms for further analysis.</p>
+    </div>
+    """)
+
+
+    # Create a Panel column for the dashboard description
+    description = pn.Column(
+        pn.Row(pn.layout.HSpacer(), description_div_all, pn.layout.HSpacer()),
+        sizing_mode="stretch_width",
+    )
+
     # Create a Panel app layout
-    app_layout = pn.Row(
-        algorithm_selector,
-        pn.Column(title_div, description_div, scatter_plot))
+    app_layout = pn.Column(
+        description,
+        pn.Row(
+            algorithm_selector,
+            pn.Column(title_div, description_div, scatter_plot)))
 
     return app_layout
 

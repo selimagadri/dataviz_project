@@ -3,20 +3,9 @@ import pandas as pd
 import panel as pn
 import bokeh.plotting as bpl
 from math import pi
-from bokeh.models import Div, ColumnDataSource, ColorBar
-from bokeh.transform import factor_cmap, linear_cmap
-from bokeh.palettes import Spectral6, Viridis256 as colors
-import seaborn as sns
-import random
-import panel.widgets as pnw
- # Import the necessary palettes
-from bokeh.palettes import Category20
+from bokeh.models import Div, ColumnDataSource, ColorBar,  LinearColorMapper, NumeralTickFormatter
+from bokeh.palettes import Greens, Viridis256 as colors
 from bokeh.models import HoverTool
-
-from bokeh.models import ColorBar, LinearColorMapper
-
-# Read the dataset into a Pandas DataFrame
-#df = pd.read_csv('dataset.csv')
 
 def createApp1():
     df = pd.read_csv('dataset.csv', index_col=0)
@@ -24,8 +13,27 @@ def createApp1():
     df.drop_duplicates(inplace=True)
     df.drop(columns=['track_id',  'album_name', 'track_name'], inplace=True)
 
+    def genre_distribution():
+        genre_counts = df['track_genre'].value_counts()
 
+        genre_distribution_plot = bpl.figure(
+            title='Track Genre Distribution',
+            x_axis_label='Genre',
+            y_axis_label='Count',
+            x_range=list(genre_counts.index),
+            sizing_mode='stretch_width',
+            tools='hover',
+            tooltips=[("Genre", "@x")],
+        )
 
+        genre_distribution_plot.xaxis.major_label_orientation = np.pi / 4
+        genre_distribution_plot.xaxis.major_label_text_font_size = "7pt"
+        genre_distribution_plot.yaxis.major_label_text_font_size = "7pt"
+        
+        genre_distribution_plot.vbar(x=list(genre_counts.index), top=genre_counts.values, width=0.8, fill_color='#68B984')
+
+        return genre_distribution_plot
+    
     def create_histogram_plot(df, selected_genre, selected_column):
         filtered_df = df if selected_genre == "All Genres" else df[df['track_genre'] == selected_genre]
         hist_plot = filtered_df[selected_column].hvplot.hist(
@@ -47,7 +55,8 @@ def createApp1():
         filtered_df = df if selected_genre == "All Genres" else df[df['track_genre'] == selected_genre]
         kde_plot = filtered_df[selected_column].hvplot.kde(
             fill_alpha=0.5, line_width=2, color='purple', height=400, width=400, 
-            title=f'KDE Plot of {selected_column} for {selected_genre}'
+            title=f'KDE Plot of {selected_column} for {selected_genre}',
+            hover = False
         )
         return kde_plot
 
@@ -110,45 +119,54 @@ def createApp1():
         audio_features = df[audio_feature_columns]
         corr = audio_features.corr()
 
-        # Create a colormap using the LinearColorMapper
-        mapper = LinearColorMapper(palette=list((colors)), low=-1, high=1)
+        custom_palette = list(Greens[9])
+    
+        color_mapper = LinearColorMapper(palette=custom_palette, low=corr.min().min(), high=corr.max().max())
 
-        # Create a Bokeh figure for the correlation heatmap
-        correlation_heatmap_figure = bpl.figure(
+        flat_values = corr.values.flatten()
+
+        x_vals = [col for col in corr.columns for _ in range(len(corr))]
+        y_vals = [index for _ in range(len(corr.columns)) for index in corr.index]
+        color_vals = flat_values
+
+        source = ColumnDataSource(data=dict(
+            x=x_vals,
+            y=y_vals,
+            image=color_vals,
+        ))
+
+        heatmap_figure = bpl.figure(
             title="Correlation Heatmap",
-            x_range=list(corr.index),
-            y_range=list((corr.index)), 
+            x_range=[str(col) for col in corr.columns],
+            y_range=[str(index) for index in corr.index],
             width=600,
             height=600,
             tools="hover",
-            #('Features', '@y, @x'),
-            tooltips=[('Features', '$y, $x'), ('Correlation', '@image')],
+            tooltips=[('Features', '@y, @x'), ('Correlation', '@image')],
             sizing_mode="fixed"
         )
-        print('xrange',corr.index)
 
-
-        # Create an image renderer for the correlation matrix
-        correlation_heatmap_figure.image(
-            image=[corr.values],  # Convert the correlation matrix to a 2D array
-            x=0,
-            y=0,
-            dw=corr.shape[1],
-            dh=corr.shape[0],
-            color_mapper=mapper,
+        heatmap_figure.rect(
+            x='x',
+            y='y',
+            width=1,
+            height=1,
+            fill_color={'field': 'image', 'transform': color_mapper},
+            line_color=None,
+            source=source,
         )
 
-    
-        color_bar = ColorBar(color_mapper=mapper, location=(0, 0))
-        correlation_heatmap_figure.add_layout(color_bar, 'right')
+        color_bar = ColorBar(color_mapper=color_mapper, location=(0, 0))
+        heatmap_figure.add_layout(color_bar, 'right')
 
-        correlation_heatmap_figure.xaxis.major_label_orientation = np.pi / 4
-        correlation_heatmap_figure.xaxis.major_label_text_font_size = "10pt"
-        correlation_heatmap_figure.yaxis.major_label_text_font_size = "10pt"
+        heatmap_figure.xaxis.major_label_orientation = np.pi / 4
+        heatmap_figure.xaxis.major_label_text_font_size = "10pt"
+        heatmap_figure.yaxis.major_label_text_font_size = "10pt"
 
-        correlation_heatmap_pane = pn.pane.Bokeh(correlation_heatmap_figure, sizing_mode="stretch_both")
+        heatmap_pane = pn.pane.Bokeh(heatmap_figure, sizing_mode="stretch_both")
 
-        return correlation_heatmap_pane
+        return heatmap_pane
+
     
 
     def get_top_genres_by_attribute(attribute, top_n=10):
@@ -268,8 +286,7 @@ def createApp1():
     genre_options = ["All Genres"] + df['track_genre'].unique().tolist()
     genre_selector = pn.widgets.Select(options=genre_options, name='Select Genre')
     column_selector = pn.widgets.Select(options=list(df.select_dtypes(include=["int", "float"]).columns), name='Select Column')
-
-
+    refresh_button = pn.widgets.Button(name='Refresh Plots', button_type='primary')
     
     def update_plots(selected_genre, selected_column):
         hist_plot = create_histogram_plot(df, selected_genre, selected_column)
@@ -294,14 +311,24 @@ def createApp1():
             pn.Row(top_genres_plot, top_artists_plot),
         )
     
+    # Create a function to reset the plots to the initial state
+    def reset_plots(event):
+        # Reset the selectors to their default values
+        genre_selector.value = "All Genres"
+        column_selector.value = df.select_dtypes(include=["int", "float"]).columns[0]
+
+    # Add a callback to the refresh button
+    refresh_button.on_click(reset_plots)
 
     dashboard = pn.Column(
         description,
         data_table,
+        genre_distribution(),
         pn.Row(
         pn.Column(
             genre_selector,
             column_selector,
+            refresh_button,
         ),
 
         pn.Column(
@@ -312,14 +339,5 @@ def createApp1():
             ),
         )    
     )
-
-
-
-    
-    
-
-   
-
-    
 
     return dashboard.servable()    

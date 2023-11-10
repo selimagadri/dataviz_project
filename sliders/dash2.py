@@ -22,7 +22,7 @@ import tensorflow as tf
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import bokeh.plotting as bpl
-from bokeh.models import ColorBar, LinearColorMapper, ColumnDataSource
+from bokeh.models import ColorBar, LinearColorMapper, ColumnDataSource, Div
 from bokeh.palettes import Greens
 
 
@@ -204,22 +204,10 @@ def createClassification():
             
         return pn.Row(
             pn.Column(
-                number.clone(value=round(accuracy*100,2)),
-                classification_report_panel,
-                #styled_df_widget,
-                
-            ),
-            pn.Column(create_confusion_matrix_heatmap(confusion_matrix_df), 
-                      #sizing_mode='fixed'
-                      )
-        )
-
-    dashboard = pn.Column(
-        pn.Column(
                 pn.pane.Markdown("""
                 # Spotify Track Genre Prediction
                 
-                This dashboard provides an overview of the Spotify Track Genre Prediction model.
+                This is an overview of the Spotify Track Genre Prediction models.
                 
                 - **Accuracy**: Displays the accuracy of the model.
                 - **Classification Report**: Shows detailed metrics on the model's performance.
@@ -227,11 +215,19 @@ def createClassification():
                 
                 Use the classifier selector to choose different models.
                 """
-                                 )
-                                 ),
-        classifier_selector,
+                ),
+                classifier_selector,
+                classification_report_panel,
+            ),
+            pn.Column(
+                number.clone(value=round(accuracy*100,2)),
+                create_confusion_matrix_heatmap(confusion_matrix_df), 
+                      )
+        )
+
+    dashboard = pn.Column(
         update_dashboard
-    )
+        )
 
     return dashboard
 
@@ -290,9 +286,44 @@ def createApp2():
     tabs = pn.Tabs(("Classification", classification_section), 
                    ("Clustering", clustering_section)
                    )
+        
+    description_div = Div(
+    text="""
+    <style>
+        .description {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .title {
+            color: #1DB954;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .line {
+            color: black;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .table {
+            margin-top: 20px;
+        }
+    </style>
+    <div class="description">
+        <p class="title">Dashboard Description</p>
+        <p class="line">This dashboard allows to predict and understand the genre of a track using machine learning models.</p>
+    </div>
+    """)
+
+
+    # Create a Panel column for the dashboard description
+    description = pn.Column(
+        pn.Row(pn.layout.HSpacer(), description_div, pn.layout.HSpacer()),
+        sizing_mode="stretch_width",
+    )
 
     return pn.Column(
-        pn.pane.Markdown("# Spotify Track Analysis"),
+        description,
         tabs
     ).servable()
 
