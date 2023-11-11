@@ -48,11 +48,9 @@ Spotiviz offers the following dashboards:
 
 Spotiviz is brought to you by our enthusiastic duo:
 
-- **Ines Ouhichi**
-  - [LinkedIn](https://www.linkedin.com/in/ines-ouhichi/)
+- [**Ines Ouhichi**](https://www.linkedin.com/in/ines-ouhichi/)
 
-- **Selima Gadri**
-  - [LinkedIn](https://www.linkedin.com/in/selima-gadri/)
+- [**Selima Gadri**](https://www.linkedin.com/in/selima-gadri/)
 
 ## Contact
 
