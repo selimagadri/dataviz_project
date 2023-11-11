@@ -8,17 +8,23 @@ Spotiviz is a data application that allows users to explore, analyze, and predic
 
 To run Spotiviz, follow these steps:
 
-1. Install the required packages using the following command:
+1. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   venv/Scripts/activate
+   ```
+
+2. Install the required packages using the following command:
    ```bash
    pip install -r requirements.txt
    ```
 
-2. Start the application using [uvicorn](https://www.uvicorn.org/):
+3. Start the application using [uvicorn](https://www.uvicorn.org/):
    ```bash
    uvicorn main:app --reload
    ```
 
-3. Visit [http://127.0.0.1:8000](http://127.0.0.1:8000) in your web browser to access the home page.
+4. Visit [http://127.0.0.1:8000](http://127.0.0.1:8000) in your web browser to access the home page.
 
 ## Dashboards
 
