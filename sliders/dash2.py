@@ -12,7 +12,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
-from catboost import CatBoostClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from keras.models import Sequential
 from keras.layers import Dense
@@ -72,7 +71,6 @@ def createClassification():
         'Naive Bayes': GaussianNB(),
         'Neural Network': '',
         'XGBoost': XGBClassifier(),
-        'CatBoost':  CatBoostClassifier()
     }
     # Clssifier selector
     classifier_selector = pn.widgets.Select(options=list(classifiers.keys()), value='Naive Bayes', name='Select Model')
@@ -194,7 +192,8 @@ def createClassification():
         report, accuracy, confusion_matrix_df = train_and_evaluate(model_name)
         number = pn.indicators.Number(
             name='Accuracy', value=72, format='{value}%',
-            colors=[(33, 'red'), (66, 'gold'), (100, 'green')]
+            colors=[(100, 'green')],
+            font_size = '30pt'
             )
 
         classification_report_panel = pn.Column(

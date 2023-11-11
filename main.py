@@ -33,18 +33,10 @@ async def dash3_page(request: Request):
     return templates.TemplateResponse("dashboard3.html", {"request": request, "script": script})
 
 
-pn.serve({'/dash1': createApp1, '/dash2': createApp2,'/dash3':createApp3},
-        port=5000, allow_websocket_origin=["127.0.0.1:8000"],
-         address="127.0.0.1", show=False)
+pn.serve({'/dash1': createApp1, '/dash2': createApp2, '/dash3': createApp3},
+         port=5000, allow_websocket_origin=["127.0.0.1:8000"], address="127.0.0.1", show=False)
 
-#uvicorn main:app --reload
 
-if __name__ == "__main__":
-    import uvicorn
+# uvicorn main:app --reload
+# uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 
-    # Serve both Panel apps
-    pn.serve({'/app': createApp1, '/other': createApp2,"/third":createApp3},
-        port=5000, allow_websocket_origin=["127.0.0.1:8000"],
-         address="127.0.0.1", show=False)
-    
-    uvicorn.run(app, host="127.0.0.1", port=8000)
